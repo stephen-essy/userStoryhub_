@@ -10,7 +10,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>userStoryhub</title>
 </head>
-<body>
+<body style="background-image: url(/Images/image2.jpg);">
     <header>
         <nav>
             <section class="navigation">
@@ -94,13 +94,15 @@
                     </div>
                 </form>
             </section>
-            <div id="cartPopup" >
+            <div id="cartPopup">
                 <h2>Your Stories</h2>
                 <ul id="storyList"></ul>
                 <p id="storyWarning" style="color: red; display: none;">Please add at least two stories before analyzing.</p>
+              <!--<div id="loader" style="display: none;">Loading...</div>-->  
+                <div id="loader" class="spinner" style="display:none;"></div>
                 <button onclick="submitStories()">Analyze All</button>
                 <button onclick="closeCart()">Close</button>
-            </div>
+              </div>              
         </main>
     </div>
     <script src="/App/app.js"></script>
