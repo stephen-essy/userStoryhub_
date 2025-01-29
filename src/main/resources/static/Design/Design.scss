@@ -511,9 +511,7 @@ main {
     z-index: 999;
     display: none;
 }
-/* Add this to your existing CSS file */
 
-/* Add this to your existing CSS file */
 
 .alert-popup {
     position: fixed;
@@ -540,7 +538,15 @@ main {
     background-color: #f44336; /* Red */
   }
   
-  
+  #down2{
+    main{
+        section{
+            h3{
+                color: #f1f1f3;
+            }
+        }
+    }
+  }
 
 @keyframes pulseGlow {
 
