@@ -70,7 +70,7 @@ nav section ul li #day {
   display: none;
 }
 nav section ul li button {
-  background-color: #00ff99;
+  background-color: #4CAF50;
   outline: none;
   border: none;
   padding: 6px;
@@ -99,7 +99,7 @@ main {
   z-index: 0;
 }
 main div p {
-  background-image: url(/Resources/Image11.jpg);
+  background-image: url(/Images/image2.jpg);
   -webkit-text-fill-color: #f1f1f3;
   -webkit-background-clip: text;
   background-clip: text;
@@ -215,91 +215,75 @@ main .card {
 #down main section {
   background: rgba(0, 0, 0, 0.03);
   width: 50%;
-  height: 65vh;
-  margin-left: 30px;
-  margin-right: 30px;
+  min-height: 65vh;
+  margin: 0 auto;
   border-radius: 20px;
   -webkit-backdrop-filter: blur(45px);
           backdrop-filter: blur(45px);
   display: flex;
   align-items: center;
   justify-content: center;
-  justify-self: unset;
 }
 #down main section form {
-  height: 8cm;
-  width: 10cm;
+  width: 90%;
+  max-width: 500px;
   background-color: #333;
   color: #f1f1f3;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-#down main section form #storypriority {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin: 10px;
-  align-items: center;
-  justify-content: center;
+#down main section form #storypriority, #down main section form #Storydescription {
+  width: 100%;
+  margin-bottom: 15px;
 }
-#down main section form #storypriority input {
-  color: #333;
-  border: none;
+#down main section form #storypriority input, #down main section form #storypriority select, #down main section form #storypriority textarea, #down main section form #Storydescription input, #down main section form #Storydescription select, #down main section form #Storydescription textarea {
+  width: 100%;
   padding: 10px;
   border-radius: 10px;
-  cursor: pointer;
-  font-family: "poppins", serif;
-  font-size: 12pt;
-  transition: 0.5s;
-}
-#down main section form #storypriority select {
-  color: #333;
   border: none;
-  padding: 10px;
-  top: -0.3cm;
+  margin-top: 5px;
+  font-family: "Poppins", serif;
+  font-size: 12pt;
+  transition: all 0.3s ease-in-out;
+}
+#down main section form #storypriority select, #down main section form #Storydescription select {
   position: relative;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: "poppins", serif;
-  font-size: 12pt;
-  transition: 0.5s;
 }
-#down main section form #Storydescription {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin: 10px;
-  align-items: center;
-  justify-content: center;
+#down main section form #storypriority textarea, #down main section form #Storydescription textarea {
+  height: 3cm;
+  resize: none;
+  text-align: left;
 }
-#down main section form #Storydescription textarea {
-  height: 2cm;
-  width: 8.9cm;
-  align-items: center;
-  justify-content: center;
+#down main section form #navigations {
+  width: 100%;
   display: flex;
-  text-align: center;
-  border-radius: 10px;
-  border-color: none;
-  font-size: 12pt;
+  justify-content: center;
 }
 #down main section form #navigations button {
   background-color: #f1f1f3;
   color: #333;
   border: none;
-  padding: 5px;
+  padding: 6px;
+  height: 1cm;
+  width: 2cm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
   cursor: pointer;
   font-family: "Poppins", serif;
-  font-size: 12pt;
-  transition: 0.5s;
-  width: 3cm;
+  font-size: 14pt;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 #down main section form #navigations button:hover {
   background-color: #ff6347;
-  font-weight: bolder;
+  font-weight: normal;
+  color: #f1f1f3;
 }
 
 .back-to-top {
@@ -343,49 +327,167 @@ main .card {
 }
 
 #cartPopup {
-  display: none;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 15cm;
-  width: 20cm;
-  background: #f1f1f3;
-  color: #333;
+  background-color: #333;
+  color: #f1f1f3;
+  width: 80%;
+  max-width: 500px;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1000;
+  text-align: center;
 }
-#cartPopup button {
-  background-color: #00ff99;
-  color: #000;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  height: 1cm;
-  padding: 10px;
-  border-radius: 5px;
+#cartPopup.active {
+  opacity: 1;
+  visibility: visible;
+}
+#cartPopup h2 {
+  margin-bottom: 15px;
+  font-family: "Poppins", serif;
+  font-size: 20pt;
 }
 #cartPopup ul {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 0;
+  margin: 0 0 15px 0;
 }
 #cartPopup ul li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  list-style: none;
+  background-color: #444;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-family: "Poppins", serif;
+  font-size: 12pt;
 }
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1); /* Light grey */
-  border-left: 4px solid #3498db; /* Blue color */
+#cartPopup p {
+  font-family: "Poppins", serif;
+  font-size: 12pt;
+  margin-bottom: 10px;
+}
+#cartPopup .spinner {
+  margin: 10px 0;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #fff;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   animation: spin 1s linear infinite;
-  margin: 100px auto;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+#cartPopup button {
+  background-color: #f1f1f3;
+  color: #333;
+  border: none;
+  padding: 8px;
+  height: 1.3cm;
+  width: 2.3cm;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Poppins", serif;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+  margin: 5px;
+}
+#cartPopup button:hover {
+  background-color: #ff6347;
+  font-weight: normal;
+  color: #f1f1f3;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+#errorPopup {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f44336;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 80%;
+  max-width: 500px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.5s ease, top 0.3s ease;
+}
+
+#errorPopup.show {
+  display: block;
+  opacity: 1;
+  top: 30px;
+}
+
+#errorPopup button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#errorPopup button:hover {
+  text-decoration: underline;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: none;
+}
+
+/* Add this to your existing CSS file */
+/* Add this to your existing CSS file */
+.alert-popup {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  color: white;
+  opacity: 0;
+  transform: translateY(-80px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.alert-popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.alert-success {
+  background-color: #4CAF50; /* Green */
+}
+
+.alert-error {
+  background-color: #f44336; /* Red */
 }
 
 @keyframes pulseGlow {
@@ -416,8 +518,4 @@ main .card {
   50% {
     transform: translateY(-10px);
   }
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }/*# sourceMappingURL=Design.css.map */

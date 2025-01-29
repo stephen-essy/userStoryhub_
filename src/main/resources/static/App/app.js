@@ -2,6 +2,7 @@ const down_arrow = document.getElementById("down_arrow");
 const up_arrow = document.getElementById("up_arrow");
 let storyCounter = 0; // Counter for stories
 let stories = []; // Array to store the user stories
+const alertPopup = document.getElementById("alertPopup");
 
 function updateTime() {
   const now = new Date();
@@ -52,91 +53,91 @@ backToTopButton.addEventListener("click", () => {
   });
 });
 
-function addStory() {
-  // Prevent form submission
+document.getElementById("addStoryButton").addEventListener("click", function(event) {
   event.preventDefault();
+  addStory();
+});
 
-  // Get values from form inputs
+function showAlert(message, type) {
+  alertPopup.textContent = message;
+  alertPopup.className = `alert-popup alert-${type} show`;
+
+  setTimeout(() => {
+    alertPopup.classList.remove("show");
+  }, 3000); // Hide after 3 seconds
+}
+
+function addStory() {
   const userStory = document.getElementById("userStory").value.trim();
   const priority = document.getElementById("priority").value;
   const description = document.getElementById("description").value.trim();
 
-  // Validate that all fields are filled
-  if (!userStory || !description) {
-    alert("Please fill in all the fields before adding a story.");
+  const userStoryPattern = /^As a (.+?), I want to (.+?) so that (.+)$/i;
+  const matches = userStoryPattern.exec(userStory);
+
+  if (!matches || matches.length !== 4) {
+    showAlert("Invalid user story format! Please use the format: 'As a [role], I want to [goal] so that [reason]'.", "error");
     return;
   }
 
-  // Add the story to the list
-  stories.push({ userStory, priority, description });
+  const actor = matches[1];
+  const goal = matches[2];
+  const reason = matches[3];
 
-  // Increment the story counter and update the button
+  if (!userStory || !description || !actor || !goal || !reason) {
+    showAlert("Please fill in all the fields before adding a story.", "error");
+    return;
+  }
+
+  stories.push({ userStory, actor, goal, reason, priority, description });
   storyCounter++;
   document.getElementById("cartCounter").textContent = storyCounter;
-
-  // Clear the input fields
   document.getElementById("userStory").value = "";
   document.getElementById("description").value = "";
 
-  alert("Story added successfully!");
+  showAlert("Story added successfully!", "success");
 }
 
 function toggleCart() {
   const cartPopup = document.getElementById("cartPopup");
   const storyList = document.getElementById("storyList");
-  storyList.innerHTML = ""; // Clear the list before populating
+  storyList.innerHTML = "";
 
-  if (cartPopup.style.display === "none") {
-    // Populate the list with stories
-    stories.forEach((story, index) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${index + 1}. ${story.userStory} (Priority: ${
-        story.priority
-      })`;
-      storyList.appendChild(listItem);
-    });
-
-    cartPopup.style.display = "block";
+  if (cartPopup.classList.contains("active")) {
+      cartPopup.classList.remove("active");
   } else {
-    cartPopup.style.display = "none";
+      stories.forEach((story, index) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = `${index + 1}. ${story.userStory} (Priority: ${story.priority})`;
+          storyList.appendChild(listItem);
+      });
+
+      cartPopup.classList.add("active");
   }
 }
 
 function closeCart() {
-  document.getElementById("cartPopup").style.display = "none";
+  document.getElementById("cartPopup").classList.remove("active");
 }
 
-//the fun beggins here
+
 function submitStories() {
-  // Ensure there are at least two stories
   if (stories.length < 2) {
     document.getElementById("storyWarning").style.display = "block";
     return;
   }
 
-  // Hide the warning and display the loader
   document.getElementById("storyWarning").style.display = "none";
   document.getElementById("loader").style.display = "block";
-  document.getElementById("storyList").innerHTML = ""; // Clear the story list
+  document.getElementById("storyList").innerHTML = "";
 
-  // Send stories to the backend
   fetch("/analyze", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(stories),
   })
-    .then((response) => {
-      // Check if the response is successful
-      if (response.ok) {
-        return response.json(); // Parse the JSON response
-      } else {
-        throw new Error("Failed to submit stories for analysis.");
-      }
-    })
+    .then((response) => response.ok ? response.json() : Promise.reject("Failed to submit stories."))
     .then((prioritizedFeatures) => {
-      // Display the results from the backend
       const storyList = document.getElementById("storyList");
       prioritizedFeatures.forEach((feature, index) => {
         const listItem = document.createElement("li");
@@ -144,21 +145,35 @@ function submitStories() {
         storyList.appendChild(listItem);
       });
 
-      // Clear stories and reset the counter
-      stories = [];
-      storyCounter = 0;
-      document.getElementById("cartCounter").textContent = storyCounter;
-
-      // Inform the user of success
-      alert("Stories analyzed successfully!");
+      document.getElementById("downloadPdfButton").style.display = "inline-block";
+      showAlert("Stories analyzed successfully!", "success");
     })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occurred while analyzing the stories.");
-    })
-    .finally(() => {
-      // Hide the loader regardless of success or failure
-      document.getElementById("loader").style.display = "none";
-    });
+    .catch((error) => showAlert(error, "error"))
+    .finally(() => document.getElementById("loader").style.display = "none");
 }
 
+document.getElementById("downloadPdfButton").addEventListener("click", () => {
+  fetch("http://localhost:8080/analyze/download-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(stories),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((text) => {
+          throw new Error(`Failed to download PDF: ${text}`);
+        });
+      }
+      return response.blob();
+    })
+    .then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "UserStories.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+      showAlert("PDF downloaded successfully!", "success");
+    })
+    .catch((error) => showAlert(error.message, "error"));
+});

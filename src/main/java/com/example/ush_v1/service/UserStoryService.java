@@ -10,58 +10,63 @@ import com.example.ush_v1.model.UserStory;
 
 @Service
 public class UserStoryService {
-    public List<String> prioritizeStories(List<UserStory> stories) {
-    // Assign scores to priorities
-    Map<String, Integer> priorityScores = Map.of(
-            "High", 3,
-            "Medium", 2,
-            "Low", 1
-    );
 
-    // Define keyword weights
-    Map<String, Integer> keywordWeights = Map.of(
-            "secure", 5,
-            "authentication", 4,
-            "encryption", 4,
-            "fast", 3,
-            "efficient", 3,
-            "optimize", 3,
-            "critical", 5,
-            "urgent", 5,
-            "immediate", 5
-    );
+    // Method to prioritize stories
+    public List<UserStory> prioritizeStories(List<UserStory> stories) {
+        // Priority scores
+        Map<String, Integer> priorityScores = Map.of(
+                "High", 3,
+                "Medium", 2,
+                "Low", 1
+        );
 
-    // Process and prioritize stories
-    return stories.stream()
-            .sorted((story1, story2) -> {
-                int score1 = calculateStoryScore(story1, priorityScores, keywordWeights);
-                int score2 = calculateStoryScore(story2, priorityScores, keywordWeights);
+        // Keyword weights for description content
+        Map<String, Integer> keywordWeights = Map.of(
+                "secure", 5,
+                "authentication", 4,
+                "encryption", 4,
+                "fast", 3,
+                "efficient", 3,
+                "optimize", 3,
+                "critical", 5,
+                "urgent", 5,
+                "immediate", 5
+        );
 
-                // Higher score first
-                return Integer.compare(score2, score1);
-            })
-            .map(story -> "Feature: " + story.getUserStory() +
-                    " | Priority: " + story.getPriority() +
-                    " | Description: " + story.getDescription())
-            .collect(Collectors.toList());
-}
+        // Process and prioritize stories
+        return stories.stream()
+                .sorted((story1, story2) -> {
+                    // Prioritize by the base priority first (High > Medium > Low)
+                    int priorityComparison = Integer.compare(priorityScores.getOrDefault(story2.getPriority(), 0),
+                            priorityScores.getOrDefault(story1.getPriority(), 0));
 
-private int calculateStoryScore(UserStory story, Map<String, Integer> priorityScores, Map<String, Integer> keywordWeights) {
-    // Base score from priority
-    int score = priorityScores.getOrDefault(story.getPriority(), 0);
+                    // If priorities are the same, then compare based on calculated score
+                    if (priorityComparison == 0) {
+                        int score1 = calculateStoryScore(story1, priorityScores, keywordWeights);
+                        int score2 = calculateStoryScore(story2, priorityScores, keywordWeights);
+                        return Integer.compare(score2, score1); // Sort by score in descending order
+                    }
 
-    // Keyword bonus
-    for (String keyword : keywordWeights.keySet()) {
-        if (story.getDescription().toLowerCase().contains(keyword)) {
-            score += keywordWeights.get(keyword);
-        }
+                    return priorityComparison; // Higher priority first
+                })
+                .collect(Collectors.toList());
     }
 
-    // Description length bonus (e.g., longer descriptions add up to 2 extra points)
-    score += Math.min(story.getDescription().length() / 50, 2);
+    // Method to calculate score for each story
+    private int calculateStoryScore(UserStory story, Map<String, Integer> priorityScores, Map<String, Integer> keywordWeights) {
+        // Base score from priority (this is now used only for breaking ties)
+        int score = priorityScores.getOrDefault(story.getPriority(), 0);
 
-    return score;
-}
+        // Add score based on description keywords
+        for (String keyword : keywordWeights.keySet()) {
+            if (story.getDescription().toLowerCase().contains(keyword)) {
+                score += keywordWeights.get(keyword);
+            }
+        }
 
+        // Add a bonus for longer descriptions (e.g., more descriptive stories get higher scores)
+        score += Math.min(story.getDescription().length() / 50, 2);  // Max bonus of 2 points
 
+        return score;
+    }
 }
